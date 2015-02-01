@@ -116,6 +116,8 @@ def update_loadbalancer(config)
   end
   render = ERB.new(template)
   File.open(config['load_balancer']['config_path'], 'w') { |f| f.write(render.result b) }
+  log("reloading loadbalancer with /etc/init.d/db_loadbalancer reload")
+  log("/etc/init.d/db_loadbalancer reload")
 end
 def save_modified_config(config)
   log("Saving modified config to file...")
