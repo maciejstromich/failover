@@ -1,4 +1,3 @@
-require 'net/ssh'
 require 'net/ping'
 require 'optparse'
 require 'YAML'
@@ -10,15 +9,6 @@ OptionParser.new do |opts|
     opts.banner = "Usage: failover.rb [options]"
     opts.on("-c", "--config CONFIG", "Configuration file to use. Default is /etc/ec2/config.yml") do |c|
         options[:config] = c
-    end
-    opts.on("-h", "--host HOST", "Host to check") do |h|
-        options[:host] = h
-    end
-    opts.on("-p", "--port PORT", Integer, "Port to check") do |p|
-        options[:port] = p
-    end
-    opts.on("-r", "--retries RETRIES", Integer, "Number of ping retries") do |r|
-        options[:retries] = r
     end
 end.parse!
 
