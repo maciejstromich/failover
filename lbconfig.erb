@@ -1,0 +1,4 @@
+write_port: <%= config['load_balancer']['write_port'] %>
+read_port: <%= config['load_balancer']['read_port'] %>
+read_nodes: <% master.each do |node| %><%= node['host'] %>:<%= node['pg_port'] %><% end %> <% read_nodes.each do |node| %><%= node %> <% end %>
+write_node: <% master.each do |node| %><%= node['host'] %>:<%= node['pg_port'] %><% end %>

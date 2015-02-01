@@ -1,24 +1,34 @@
 ---
 options:
-  retries: 5
-  public_key: '~/.ssh/id_rsa.pub'
-  private_key: '~/.ssh/id_rsa'
+  retries: 1
+  seconds: 1
+load_balancer:
+  template: lbconfig.erb
+  config_path: loadbalancer.config
+  write_port: 4444
+  read_port: 4443
 hosts:
-- host: pg1
+- host: 127.0.0.1
   ssh_port: 22
   pg_port: 5432
+  pg_user: postgres
+  status: standby
+  pg_data: "/var/lib/postgresql/9.3/main"
+- host: 127.0.0.2
+  ssh_port: 22
+  pg_port: 5433
+  pg_user: postgres
+  status: failed
+  pg_data: "/var/lib/postgresql/9.3/main"
+- host: 127.0.0.3
+  ssh_port: 22
+  pg_port: 5433
+  pg_user: postgres
+  status: failed
+  pg_data: "/var/lib/postgresql/9.3/main"
+- host: 127.0.0.4
+  ssh_port: 22
+  pg_port: 5433
   pg_user: postgres
   status: master
-  pg_data: /var/lib/postgresql/9.3/main
-- host: pg2
-  ssh_port: 22
-  pg_port: 5432
-  pg_user: postgres
-  status: standby
-  pg_data: /var/lib/postgresql/9.3/main
-- host: pg3
-  ssh_port: 22
-  pg_port: 5432
-  pg_user: postgres
-  pg_data: /var/lib/postgresql/9.3/main
-  status: standby
+  pg_data: "/var/lib/postgresql/9.3/main"
