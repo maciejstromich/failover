@@ -1,9 +1,9 @@
 require 'net/ping'
 require 'optparse'
-require 'YAML'
+require 'yaml'
 require 'erb'
 
-STDOUT.sync = true
+#STDOUT.sync = true
 options = {}
 config = {}
 # hack for erb
@@ -91,7 +91,8 @@ def promote_host(config, current_master)
 end
 def promote_standby_db(config)
   master = get_nodes_by_status(config, 'master')
-  log("ssh #{master[0]['pg_user']}@#{master[0]['host']} -c 'repmgr -f /etc/repmgr/repmgr.conf standby promote'")
+  log("ssh #{master[0]['ssh_pg_user']}@#{master[0]['host']} 'PATH=/usr/lib/postgresql/9.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games repmgr -f /etc/repmgr/repmgr.conf standby promote > /dev/null 2>&1'")
+  system("ssh #{master[0]['ssh_pg_user']}@#{master[0]['host']} 'PATH=/usr/lib/postgresql/9.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games repmgr -f /etc/repmgr/repmgr.conf standby promote > /dev/null 2>&1'")
 end
 def standby_follow(config)
   standbys = get_nodes_by_status(config, 'standby')
@@ -99,7 +100,8 @@ def standby_follow(config)
     log('bummer no available standbys')
   else
     standbys.each do |host|
-      log("ssh #{host['pg_user']}@#{host['host']} -c \"repmgr -f /etc/repmgr/repmgr.conf standby follow\"")
+      log("ssh #{host['ssh_pg_user']}@#{host['host']} 'PATH=/usr/lib/postgresql/9.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games repmgr -f /etc/repmgr/repmgr.conf standby follow'")
+      system("ssh #{host['ssh_pg_user']}@#{host['host']} 'PATH=/usr/lib/postgresql/9.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games repmgr -f /etc/repmgr/repmgr.conf standby follow'")
     end
   end
 end
@@ -130,8 +132,10 @@ def failed_to_slave(config)
   failures.each do |host|
     pt = ping_host(host['host'], host['ssh_port'], config['options']['retries'], config['options']['seconds'])
     if pt == 0 
-      log("ssh #{host['pg_user']}@#{host['host']} -c \"repmgr -f /etc/repmgr/repmgr.conf -D #{host['pg_data']} --force standby clone #{master[0]['host']}\"")
-      log("ssh #{host['pg_user']}@#{host['host']} -c \"pg_ctl -D #{host['pg_data']} start\"")
+      log("ssh #{host['ssh_pg_user']}@#{host['host']} 'PATH=/usr/lib/postgresql/9.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games repmgr -f /etc/repmgr/repmgr.conf -D #{host['pg_data']} --force standby clone #{master[0]['host']}'")
+      system("ssh #{host['ssh_pg_user']}@#{host['host']} 'PATH=/usr/lib/postgresql/9.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games repmgr -f /etc/repmgr/repmgr.conf -D #{host['pg_data']} --force standby clone #{master[0]['host']}'")
+      log("ssh #{host['ssh_admin_user']}@#{host['host']} '/etc/init.d/postgresql start'")
+      system("ssh #{host['ssh_admin_user']}@#{host['host']} '/etc/init.d/postgresql start'")
       config['hosts'].each do |ch|
         if ch['host'] == host['host']
           ch['status'] = 'standby'
@@ -161,7 +165,7 @@ def main(config)
       save_modified_config(config)
     end
   else
-    log("#{host['host']} is aliveee....")
+    log("#{master[0]['host']} is aliveee....")
   end
   failed_to_slave(config)
 end

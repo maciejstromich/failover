@@ -8,27 +8,17 @@ load_balancer:
   write_port: 4444
   read_port: 4443
 hosts:
-- host: 127.0.0.1
+- host: pg1
   ssh_port: 22
   pg_port: 5432
-  pg_user: postgres
+  ssh_admin_user: root
+  ssh_pg_user: postgres
   status: standby
   pg_data: "/var/lib/postgresql/9.3/main"
-- host: 127.0.0.2
+- host: pg2
   ssh_port: 22
-  pg_port: 5433
-  pg_user: postgres
-  status: failed
-  pg_data: "/var/lib/postgresql/9.3/main"
-- host: 127.0.0.3
-  ssh_port: 22
-  pg_port: 5433
-  pg_user: postgres
-  status: failed
-  pg_data: "/var/lib/postgresql/9.3/main"
-- host: 127.0.0.4
-  ssh_port: 22
-  pg_port: 5433
-  pg_user: postgres
+  pg_port: 5432
+  ssh_admin_user: root
+  ssh_pg_user: postgres
   status: master
   pg_data: "/var/lib/postgresql/9.3/main"
