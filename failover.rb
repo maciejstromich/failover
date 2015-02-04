@@ -23,7 +23,7 @@ else
 end
 config = YAML.load(File.read($config_file))
 
-unless config["hosts"] && config["options"]["retries"]
+unless config['hosts'] && config['options']['retries']
   puts 'Use --help, Luke...'
   exit 1
 end
